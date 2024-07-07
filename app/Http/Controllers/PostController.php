@@ -48,22 +48,30 @@ class PostController extends Controller
 
     return view('posts.edit',['posts'=>$posts,'user'=>$user]);
    }
-   public function update(Request $request,$id){
-    $validatedData = $request->validate([
-        'title' => ['required', 'min:5', 'max:10'],
-        'description' => ['required'],
-        'PostedBy' => ['required','exists:users,id'],
-
-    ]);
-    $post=Post::findOrFail($id);
-    $post->title = $request->title;
-    $post->description = $request->description;
-    $post->user_id = $request->PostedBy;
-
-    $post->save();
-
-    return redirect()->route('posts.index')->with('success', 'Data updated Successfully');
+   public function update(Request $request, $id)
+   {
+       // Validate the incoming request data
+       $validatedData = $request->validate([
+           'title' => ['required', 'min:5', 'max:10'],
+           'description' => ['required'],
+           'PostedBy' => ['required', 'exists:users,id'],
+       ]);
+   
+       // Find the post by ID or fail
+       $post = Post::findOrFail($id);
+   
+       // Update the post attributes with validated data
+       $post->title = $validatedData['title'];
+       $post->description = $validatedData['description'];
+       $post->user_id = $validatedData['PostedBy'];
+   
+       // Save the updated post to the database
+       $post->save();
+   
+       // Redirect back to the posts index with a success message
+       return redirect()->route('posts.index')->with('success', 'Data updated Successfully');
    }
+   
    public function delete($id){
     $post=Post::find($id);
     if($post){
